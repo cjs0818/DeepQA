@@ -218,6 +218,9 @@ class TextData:
             elif self.args.corpus == 'opensubs':
                 opensubsData = OpensubsData(self.corpusDir)
                 self.createCorpus(opensubsData.getConversations())
+            elif self.args.corpus == 'fbdata':
+                fbData = FBData(self.corpusDir)
+                self.createCorpus(fbData.getConversations())
 
             # Saving
             print('Saving dataset...')

@@ -1,4 +1,5 @@
 import os
+import gzip
 
 """
 Load the cornell movie dialog corpus.
@@ -19,7 +20,7 @@ class FBData:
         """
 
         self.conversations = self.loadConversations(
-            os.path.join(dirName, "tf.txt"))
+            os.path.join(dirName, "tf.txt.gz"))
 
         # TODO: Cleaner program (merge copy-paste) !!
 
@@ -32,9 +33,9 @@ class FBData:
         """
         conversations = []
 
-        with open(fileName, 'r',
-                  encoding='iso-8859-1') as f:  # TODO: Solve Iso encoding pb !
+        with gzip.open(fileName, 'r') as f:  # TODO: Solve Iso encoding pb !
             for line in f:
+                line = line.decode('utf-8')
                 values = line.split("\t")
 
                 for i in range(2, len(values)):

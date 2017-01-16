@@ -100,3 +100,15 @@ class CornellData:
 
     def getConversations(self):
         return self.conversations
+
+if __name__ == "__main__":
+    import pprint
+    corpusDir = os.path.join('..', 'data', 'cornell')
+
+    cornellData = CornellData(corpusDir)
+    conversations = cornellData.getConversations()
+    for conversation in conversations:
+        for i in range(len(conversation["lines"]) - 1):  # We ignore the last line (no answer for it)
+            inputLine = conversation["lines"][i]
+            targetLine = conversation["lines"][i + 1]
+            print("input: ", inputLine['text'], "target: ", targetLine['text'])

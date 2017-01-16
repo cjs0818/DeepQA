@@ -27,6 +27,7 @@ import random
 
 from chatbot.cornelldata import CornellData
 from chatbot.opensubsdata import OpensubsData
+from chatbot.fbdata import FBData
 
 class Batch:
     """Struct containing batches info

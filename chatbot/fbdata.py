@@ -38,12 +38,9 @@ class FBData:
                 line = line.decode('utf-8')
                 values = line.split("\t")
 
-                for i in range(2, len(values)):
-                    if i % 2 == 1:
-                        continue
-
+                for i in range(3, len(values), 2):
                     q = {'like_count': values[0], 'text': values[1]}
-                    a = {'like_count': values[i], 'text': values[i+1]}
+                    a = {'like_count': values[i-1], 'text': values[i]}
 
                     convObj = {}
                     convObj["lines"] = []

@@ -20,7 +20,7 @@ class FBData:
         """
 
         self.conversations = self.loadConversations(
-            os.path.join(dirName, "dcoding.txt.gz"))
+            os.path.join(dirName, "tf.txt.gz"))
 
         # TODO: Cleaner program (merge copy-paste) !!
 

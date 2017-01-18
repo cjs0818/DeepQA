@@ -108,7 +108,7 @@ class Chatbot:
         datasetArgs.add_argument('--corpus', choices=['fbdata', 'cornell', 'opensubs'], default='fbdata', help='corpus on which extract the dataset. Only two corpus available right now (cornell and opensubs)')  # TODO: Replace by cst registered in textdata
         datasetArgs.add_argument('--datasetTag', type=str, default=None, help='add a tag to the dataset (file where to load the vocabulary and the precomputed samples, not the original corpus). Useful to manage multiple versions')  # The samples are computed from the corpus if it does not exist already. There are saved in \'data/samples/\'
         datasetArgs.add_argument('--ratioDataset', type=float, default=1.0, help='ratio of dataset used to avoid using the whole dataset')  # Not implemented, useless ?
-        datasetArgs.add_argument('--maxLength', type=int, default=10, help='maximum length of the sentence (for input and output), define number of maximum step of the RNN')
+        datasetArgs.add_argument('--maxLength', type=int, default=200, help='maximum length of the sentence (for input and output), define number of maximum step of the RNN')
 
         # Network options (Warning: if modifying something here, also make the change on save/loadParams() )
         nnArgs = parser.add_argument_group('Network options', 'architecture related option')
@@ -265,7 +265,7 @@ class Chatbot:
         """
 
         # Loading the file to predict
-        with open(os.path.join(self.args.rootDir, self.TEST_IN_NAME), 'r') as f:
+        with open(os.path.join(self.args.rootDir, self.TEST_IN_NAME), 'r', encoding='utf8') as f:
             lines = f.readlines()
 
         modelList = self._getModelList()
@@ -280,7 +280,7 @@ class Chatbot:
             print('Testing...')
 
             saveName = modelName[:-len(self.MODEL_EXT)] + self.TEST_OUT_SUFFIX  # We remove the model extension and add the prediction suffix
-            with open(saveName, 'w') as f:
+            with open(saveName, 'w', encoding='utf8') as f:
                 nbIgnored = 0
                 for line in tqdm(lines, desc='Sentences'):
                     question = line[:-1]  # Remove the endl character
@@ -340,6 +340,7 @@ class Chatbot:
         # Create the input batch
         batch = self.textData.sentence2enco(question)
         if not batch:
+            print("No batch")
             return None
         if questionSeq is not None:  # If the caller want to have the real input
             questionSeq.extend(batch.encoderSeqs)

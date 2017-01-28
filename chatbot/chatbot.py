@@ -71,7 +71,7 @@ class Chatbot:
         self.CONFIG_VERSION = '0.4'
         self.TEST_IN_NAME = 'data/test/samples.txt'
         self.TEST_OUT_SUFFIX = '_predictions.txt'
-        self.SENTENCES_PREFIX = ['Q: ', 'A: ']
+        self.SENTENCES_PREFIX = ['Post: ', 'Comment: ']
 
     @staticmethod
     def parseArgs(args):
@@ -285,12 +285,16 @@ class Chatbot:
                 for line in tqdm(lines, desc='Sentences'):
                     question = line[:-1]  # Remove the endl character
 
-                    answer = self.singlePredict(question)
+                    answer, prob = self.singlePredict(question)
                     if not answer:
                         nbIgnored += 1
                         continue  # Back to the beginning, try again
 
-                    predString = '{x[0]}{0}\n{x[1]}{1}\n\n'.format(question, self.textData.sequence2str(answer, clean=True), x=self.SENTENCES_PREFIX)
+                    predString = '{x[0]}{0}\n{x[1]}{1} {2}\n\n'.\
+                        format(question,
+                               self.textData.sequence2str(answer, clean=True),
+                               prob,
+                               x=self.SENTENCES_PREFIX)
                     if self.args.verbose:
                         tqdm.write(predString)
                     f.write(predString)
@@ -316,12 +320,12 @@ class Chatbot:
                 break
 
             questionSeq = []  # Will be contain the question as seen by the encoder
-            answer = self.singlePredict(question, questionSeq)
+            answer, prob = self.singlePredict(question, questionSeq)
             if not answer:
                 print('Warning: sentence too long, sorry. Maybe try a simpler sentence.')
                 continue  # Back to the beginning, try again
 
-            print('{}{}'.format(self.SENTENCES_PREFIX[1], self.textData.sequence2str(answer, clean=True)))
+            print('{}{}{}'.format(self.SENTENCES_PREFIX[1], self.textData.sequence2str(answer, clean=True), prob))
 
             if self.args.verbose:
                 print(self.textData.batchSeq2str(questionSeq, clean=True, reverse=True))
@@ -347,10 +351,11 @@ class Chatbot:
 
         # Run the model
         ops, feedDict = self.model.step(batch)
+        # output.shape (202, 1, 36439)
         output = self.sess.run(ops[0], feedDict)  # TODO: Summarize the output too (histogram, ...)
-        answer = self.textData.deco2sentence(output)
+        answer, prob = self.textData.deco2sentence(output)
 
-        return answer
+        return answer, prob
 
     def daemonPredict(self, sentence):
         """ Return the answer to a given sentence (same as singlePredict() but with additional cleaning)
@@ -359,8 +364,9 @@ class Chatbot:
         Return:
             str: the human readable sentence
         """
+        answer, _ = self.singlePredict(sentence)
         return self.textData.sequence2str(
-            self.singlePredict(sentence),
+            answer,
             clean=True
         )
 

@@ -444,11 +444,25 @@ class TextData:
         """
         sequence = []
 
-        # Choose the words with the highest prediction score
-        for out in decoderOutputs:
-            sequence.append(np.argmax(out))  # Adding each predicted word ids
+        prob_sum = 0
+        prob_count = 0
 
-        return sequence  # We return the raw sentence. Let the caller do some cleaning eventually
+        # Choose the words with the highest prediction score
+        # decoderOutputs.shape (202, 1, 36439), out.shape=(1,36439)
+        for out in decoderOutputs:
+            wordId = np.argmax(out)
+            sequence.append(wordId)  # Adding each predicted word ids
+            if wordId != self.padToken and wordId != self.goToken and wordId != self.eosToken:
+                prob_sum += out[0][wordId]
+                prob_count += 1
+
+                # http://stackoverflow.com/questions/6910641/how-to-get-indices-of-n-maximum-values-in-a-numpy-array
+                # Want to see top 5 predictions
+                # a = np.array(out[0])
+                # ind = np.argpartition(a, -5)[-5:]
+                # print(wordId, ind, np.sort(a[ind]))
+
+        return sequence, prob_sum/(prob_count+1)  # We return the raw sentence. Let the caller do some cleaning eventually
 
     def playDataset(self):
         """Print a random dialogue from the dataset

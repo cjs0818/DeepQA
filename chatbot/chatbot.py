@@ -96,7 +96,7 @@ class Chatbot:
         globalArgs.add_argument('--playDataset', type=int, nargs='?', const=10, default=None,  help='if set, the program  will randomly play some samples(can be use conjointly with createDataset if this is the only action you want to perform)')
         globalArgs.add_argument('--reset', action='store_true', help='use this if you want to ignore the previous model present on the model directory (Warning: the model will be destroyed with all the folder content)')
         globalArgs.add_argument('--verbose', action='store_true', help='When testing, will plot the outputs at the same time they are computed')
-        globalArgs.add_argument('--keepAll', action='store_true', help='If this option is set, all saved model will be kept (Warning: make sure you have enough free disk space or increase saveEvery)')  # TODO: Add an option to delimit the max size
+        globalArgs.add_argument('--keep', type=int, default=5, help='Maximum number of recent checkpoints to keep. Defaults to 5.')
         globalArgs.add_argument('--modelTag', type=str, default=None, help='tag to differentiate which model to store/load')
         globalArgs.add_argument('--rootDir', type=str, default=None, help='folder where to look for the models and data')
         globalArgs.add_argument('--watsonMode', action='store_true', help='Inverse the questions and answer when training (the network try to guess the question)')
@@ -162,10 +162,7 @@ class Chatbot:
 
         # Saver/summaries
         self.writer = tf.summary.FileWriter(self._getSummaryName())
-        if '12' in tf.__version__:  # HACK: Solve new tf Saver V2 format
-            self.saver = tf.train.Saver(max_to_keep=200, write_version=tf.train.SaverDef.V2)  # V1 format has been deprecated.
-        else:
-            self.saver = tf.train.Saver(max_to_keep=200)
+        self.saver = tf.train.Saver(max_to_keep=self.args.keep)
 
         # TODO: Fixed seed (WARNING: If dataset shuffling, make sure to do that after saving the
         # dataset, otherwise, all which cames after the shuffling won't be replicable when
@@ -268,7 +265,8 @@ class Chatbot:
         with open(os.path.join(self.args.rootDir, self.TEST_IN_NAME), 'r', encoding='utf8') as f:
             lines = f.readlines()
 
-        modelList = self._getModelList()
+        modelList = tf.train.get_checkpoint_state(self.modelDir).all_model_checkpoint_paths
+
         if not modelList:
             print('Warning: No model found in \'{}\'. Please train a model before trying to predict'.format(self.modelDir))
             return
@@ -447,18 +445,15 @@ class Chatbot:
 
         print('WARNING: ', end='')
 
-        modelName = self._getModelName()
+        last_checkpoint = tf.train.latest_checkpoint(self.modelDir)
 
         if os.listdir(self.modelDir):
             if self.args.reset:
                 print('Reset: Destroying previous model at {}'.format(self.modelDir))
             # Analysing directory content
-            elif os.path.exists(modelName):  # Restore the model
-                print('Restoring previous model from {}'.format(modelName))
-                self.saver.restore(sess, modelName)  # Will crash when --reset is not activated and the model has not been saved yet
-            elif self._getModelList():
-                print('Conflict with previous models.')
-                raise RuntimeError('Some models are already present in \'{}\'. You should check them first (or re-try with the keepAll flag)'.format(self.modelDir))
+            elif last_checkpoint:  # Restore the model
+                print('Restoring previous model from {}'.format(last_checkpoint))
+                self.saver.restore(sess, last_checkpoint)  # Will crash when --reset is not activated and the model has not been saved yet
             else:  # No other model to conflict with (probably summary files)
                 print('No previous model found, but some files found at {}. Cleaning...'.format(self.modelDir))  # Warning: No confirmation asked
                 self.args.reset = True
@@ -479,13 +474,9 @@ class Chatbot:
         """
         tqdm.write('Checkpoint reached: saving model (don\'t stop the run)...')
         self.saveModelParams()
-        self.saver.save(sess, self._getModelName())  # TODO: Put a limit size (ex: 3GB for the modelDir)
+        self.saver.save(sess, self._getModelName(), global_step=self.globStep)
         tqdm.write('Model saved.')
 
-    def _getModelList(self):
-        """ Return the list of the model files inside the model directory
-        """
-        return [os.path.join(self.modelDir, f) for f in os.listdir(self.modelDir) if f.endswith(self.MODEL_EXT)]
 
     def loadModelParams(self):
         """ Load the some values associated with the current model, like the current globStep value
@@ -586,14 +577,12 @@ class Chatbot:
 
     def _getModelName(self):
         """ Parse the argument to decide were to save/load the model
-        This function is called at each checkpoint and the first time the model is load. If keepAll option is set, the
-        globStep value will be included in the name.
+        globStep value will be included in the name by tensorflow on save time
+
         Return:
             str: The path and name were the model need to be saved
         """
         modelName = os.path.join(self.modelDir, self.MODEL_NAME_BASE)
-        if self.args.keepAll:  # We do not erase the previously saved model by including the current step on the name
-            modelName += '-' + str(self.globStep)
         return modelName + self.MODEL_EXT
 
     def getDevice(self):

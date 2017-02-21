@@ -19,6 +19,8 @@ Loads the dialogue corpus, builds the vocabulary
 
 import numpy as np
 import nltk  # For tokenize
+from konlpy.tag import Twitter
+
 from tqdm import tqdm  # Progress bar
 import pickle  # Saving the data
 import math  # For float comparison
@@ -304,6 +306,7 @@ class TextData:
         """
         words = []
 
+        pos_tagger = Twitter()
         # Extract sentences
         sentencesToken = nltk.sent_tokenize(line)
 
@@ -314,7 +317,8 @@ class TextData:
             if not isTarget:
                 i = len(sentencesToken)-1 - i
 
-            tokens = nltk.word_tokenize(sentencesToken[i])
+            # tokens = nltk.word_tokenize(sentencesToken[i])  # eng token
+            tokens = ["{}/{}".format(t, p) for t, p in pos_tagger.pos(sentencesToken[i], norm=True, stem=True)] # kor token
 
             # If the total length is not too big, we still can add one more sentence
             if len(words) + len(tokens) <= self.args.maxLength:

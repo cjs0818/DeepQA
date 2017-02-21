@@ -28,6 +28,12 @@ The program requires the following dependencies (easy to install using pip):
  * CUDA (for using gpu, see TensorFlow [installation page](https://www.tensorflow.org/versions/master/get_started/os_setup.html#optional-install-cuda-gpus-on-linux) for more details)
  * nltk (natural language toolkit for tokenized the sentences)
  * tqdm (for the nice progression bars)
+ * konlpy (korean language parser)
+ 
+After konlpy installed, You need to install following dependency manually. Because pip install jpype1 instead of jpype1-py3
+```
+pip3 install jpype1-py3
+```
 
 With you might also need to download additional data to make nltk work.
 

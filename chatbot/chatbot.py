@@ -70,7 +70,7 @@ class Chatbot:
         self.CONFIG_FILENAME = 'params.ini'
         self.CONFIG_VERSION = '0.4'
         self.TEST_IN_NAME = 'data/test/samples.txt'
-        self.TEST_OUT_SUFFIX = '_predictions.txt'
+        self.TEST_OUT_SUFFIX = '-predictions.txt'
         self.SENTENCES_PREFIX = ['Post: ', 'Comment: ']
 
     @staticmethod
@@ -192,7 +192,7 @@ class Chatbot:
                 self.mainTestInteractive(self.sess)
             elif self.args.test == Chatbot.TestMode.ALL:
                 print('Start predicting...')
-                self.predictTestset(self.sess)
+                self.set(self.sess)
                 print('All predictions done')
             elif self.args.test == Chatbot.TestMode.DAEMON:
                 print('Daemon mode, running in background...')
@@ -233,12 +233,16 @@ class Chatbot:
 
                 # TODO: Also update learning parameters eventually
 
+                losses = []
+
                 tic = datetime.datetime.now()
                 for nextBatch in tqdm(batches, desc="Training"):
                     # Training pass
                     ops, feedDict = self.model.step(nextBatch)
                     assert len(ops) == 2  # training, loss
                     _, loss, summary = sess.run(ops + (mergedSummaries,), feedDict)
+                    losses.append(loss);
+
                     self.writer.add_summary(summary, self.globStep)
                     self.globStep += 1
 
@@ -247,8 +251,9 @@ class Chatbot:
                         self._saveSession(sess)
 
                 toc = datetime.datetime.now()
+                avg_loss = np.mean(losses)
 
-                print("Epoch finished in {}".format(toc-tic))  # Warning: Will overflow if an epoch takes more than 24 hours, and the output isn't really nicer
+                print("Epoch finished in {} Avg. Loss {}".format(toc-tic, avg_loss))  # Warning: Will overflow if an epoch takes more than 24 hours, and the output isn't really nicer
         except (KeyboardInterrupt, SystemExit):  # If the user press Ctrl+C while testing progress
             print('Interruption detected, exiting the program...')
 
@@ -272,12 +277,12 @@ class Chatbot:
             return
 
         # Predicting for each model present in modelDir
-        for modelName in sorted(modelList):  # TODO: Natural sorting
+        for modelName in sorted(modelList):
             print('Restoring previous model from {}'.format(modelName))
             self.saver.restore(sess, modelName)
             print('Testing...')
 
-            saveName = modelName[:-len(self.MODEL_EXT)] + self.TEST_OUT_SUFFIX  # We remove the model extension and add the prediction suffix
+            saveName = modelName + self.TEST_OUT_SUFFIX  # We remove the model extension and add the prediction suffix
             with open(saveName, 'w', encoding='utf8') as f:
                 nbIgnored = 0
                 for line in tqdm(lines, desc='Sentences'):

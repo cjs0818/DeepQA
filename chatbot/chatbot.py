@@ -192,7 +192,7 @@ class Chatbot:
                 self.mainTestInteractive(self.sess)
             elif self.args.test == Chatbot.TestMode.ALL:
                 print('Start predicting...')
-                self.set(self.sess)
+                self.predictTestset(self.sess)
                 print('All predictions done')
             elif self.args.test == Chatbot.TestMode.DAEMON:
                 print('Daemon mode, running in background...')

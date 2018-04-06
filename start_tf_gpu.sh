@@ -1,6 +1,6 @@
 nvidia-docker run -it --rm \
  --name deepqa_gpu \
- --volume /home/jschoi/work/LSTM/DeepQA:/root/DeepQA:rw \
+ --volume /home/jschoi/work/LSTM:/roo:rw \
  -p 8888:8888 \
  -p 6006:6006 \
  deepqa:latest-gpu \

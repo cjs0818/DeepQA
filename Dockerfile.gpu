@@ -17,7 +17,6 @@ RUN  \
   asgi_redis \
   channels==1.1.8 
 
-RUN python3 -m nltk.downloader punkt
 
 ## Tensorflow
 #ARG TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.11.0-cp35-cp35m-linux_x86_64.whl
@@ -30,6 +29,7 @@ RUN \
   #&& pip3 install channels==1.1.8
 
 RUN pip3 install konlpy Jpype1
+RUN python3 -m nltk.downloader punkt
 
 
 #COPY ./ /root/DeepQA

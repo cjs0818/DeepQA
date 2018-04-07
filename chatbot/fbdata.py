@@ -34,7 +34,7 @@ class FBData:
         conversations = []
 
 
-        #fileName = '/root/DeepQA_kor/data/fbdata/short.txt.gz'
+        fileName = '/root/DeepQA_kor/data/fbdata/short.txt.gz'
         #fileName = '/root/DeepQA_kor/data/fbdata/awskrug.txt'
 
         with gzip.open(fileName, 'r') as f:  # TODO: Solve Iso encoding pb !

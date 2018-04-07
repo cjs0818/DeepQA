@@ -7,7 +7,8 @@ FROM gcr.io/tensorflow/tensorflow:1.5.0-rc1-gpu-py3
 ## Dependencies
 
 RUN \
-apt-get -qq -y update && apt-get -y install unzip 
+apt-get -qq -y update && apt-get -y install unzip default_jdk
+#apt-get -qq -y update && apt-get -y install unzip 
 #python3 python3-pip
 
 RUN  \

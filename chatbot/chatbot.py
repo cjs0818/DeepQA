@@ -125,6 +125,8 @@ class Chatbot:
         trainingArgs.add_argument('--saveEvery', type=int, default=1000, help='nb of mini-batch step before creating a model checkpoint')
         trainingArgs.add_argument('--batchSize', type=int, default=10, help='mini-batch size')
         trainingArgs.add_argument('--learningRate', type=float, default=0.001, help='Learning rate')
+        trainingArgs.add_argument('--dropout', type=float, default=0.9, help='Dropout rate (keep probabilities)')
+
 
         return parser.parse_args(args)
 
@@ -586,6 +588,8 @@ class Chatbot:
         config['Training (won\'t be restored)'] = {}
         config['Training (won\'t be restored)']['learningRate'] = str(self.args.learningRate)
         config['Training (won\'t be restored)']['batchSize'] = str(self.args.batchSize)
+        config['Training (won\'t be restored)']['dropout'] = str(self.args.dropout)
+
 
         with open(os.path.join(self.modelDir, self.CONFIG_FILENAME), 'w') as configFile:
             config.write(configFile)

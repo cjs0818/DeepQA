@@ -33,10 +33,27 @@ class FBData:
         """
         conversations = []
 
+
+        #fileName = '/root/DeepQA_kor/data/fbdata/short.txt.gz'
+        #fileName = '/root/DeepQA_kor/data/fbdata/awskrug.txt'
+
         with gzip.open(fileName, 'r') as f:  # TODO: Solve Iso encoding pb !
             for line in f:
+                #print("-----10--------")
+
                 line = line.decode('utf-8')
                 values = line.split("\t")
+
+
+                """
+                print("fileName: ", fileName)
+                print("line: ", line)
+                print("values: ", values)
+                print("len(values): ", len(values))
+                print("values[0]: ", values[0])
+                print("values[1]: ", values[1])
+                """
+
 
                 for i in range(3, len(values), 2):
                     q = {'like_count': values[0], 'text': values[1]}

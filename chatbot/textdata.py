@@ -71,7 +71,10 @@ class TextData:
         self.word2id = {}
         self.id2word = {}  # For a rapid conversion
 
+        print("------")
         self.loadCorpus(self.samplesDir)
+        print("======")
+        print("self.samplesName: ", self.samplesName)
 
         # Plot some stats:
         print('Loaded {}: {} words, {} QA'.format(self.args.corpus, len(self.word2id), len(self.trainingSamples)))
@@ -209,6 +212,9 @@ class TextData:
         Args:
             dirName (str): The directory where to load/save the model
         """
+
+        print("-----05--------")
+
         datasetExist = False
         if os.path.exists(os.path.join(dirName, self.samplesName)):
             datasetExist = True
@@ -223,6 +229,7 @@ class TextData:
                 opensubsData = OpensubsData(self.corpusDir)
                 self.createCorpus(opensubsData.getConversations())
             elif self.args.corpus == 'fbdata':
+                print("-----05-01--------")
                 fbData = FBData(self.corpusDir)
                 self.createCorpus(fbData.getConversations())
 
@@ -230,6 +237,7 @@ class TextData:
             print('Saving dataset...')
             self.saveDataset(dirName)  # Saving tf samples
         else:
+            print("-----05-02--------")
             print('Loading dataset from {}...'.format(dirName))
             self.loadDataset(dirName)
 
@@ -255,6 +263,7 @@ class TextData:
             dirName (str): The directory where to load the model
         """
         with open(os.path.join(dirName, self.samplesName), 'rb') as handle:
+            print("-----06--------")
             data = pickle.load(handle)  # Warning: If adding something here, also modifying saveDataset
             self.word2id = data["word2id"]
             self.id2word = data["id2word"]

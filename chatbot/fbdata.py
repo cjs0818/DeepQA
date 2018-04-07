@@ -36,6 +36,7 @@ class FBData:
 
         fileName = '/root/DeepQA_kor/data/fbdata/short.txt.gz'
         #fileName = '/root/DeepQA_kor/data/fbdata/awskrug.txt'
+        cnt = 0
 
         with gzip.open(fileName, 'r') as f:  # TODO: Solve Iso encoding pb !
             for line in f:
@@ -43,6 +44,10 @@ class FBData:
 
                 line = line.decode('utf-8')
                 values = line.split("\t")
+
+                cnt = cnt + 1
+                print("cnt: ", cnt)
+                print("line: ", line)
 
 
                 """

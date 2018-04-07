@@ -40,6 +40,7 @@ class ProjectionOp:
         self.scope = scope
 
         # Projection on the keyboard
+        """
         with tf.variable_scope('weights_' + self.scope):
             self.W = tf.get_variable(
                 'weights',
@@ -53,6 +54,21 @@ class ProjectionOp:
                 initializer=tf.constant_initializer(),
                 dtype=dtype
             )
+        """
+        with tf.variable_scope('weights_' + self.scope):
+            self.W_t = tf.get_variable(
+                'weights',
+                shape,
+                # initializer=tf.truncated_normal_initializer()  # TODO: Tune value (fct of input size: 1/sqrt(input_dim))
+                dtype=dtype
+            )
+            self.b = tf.get_variable(
+                'bias',
+                shape[0],
+                initializer=tf.constant_initializer(),
+                dtype=dtype
+            )
+            self.W = tf.transpose(self.W_t)
 
     def getWeights(self):
         """ Convenience method for some tf arguments
@@ -112,6 +128,7 @@ class Model:
         # Parameters of sampled softmax (needed for attention mechanism and a large vocabulary size)
         outputProjection = None
         # Sampled softmax only makes sense if we sample less than vocabulary size.
+        """
         if 0 < self.args.softmaxSamples < self.textData.getVocabularySize():
             outputProjection = ProjectionOp(
                 (self.args.hiddenSize, self.textData.getVocabularySize()),
@@ -145,9 +162,35 @@ class Model:
         #encoDecoCell = tf.contrib.rnn.BasicLSTMCell(self.args.hiddenSize, state_is_tuple=True)  # Or GRUCell, LSTMCell(args.hiddenSize)
         #encoDecoCell = tf.contrib.rnn.DropoutWrapper(encoDecoCell, output_keep_prob=self.keep_prob)
         #encoDecoCell = tf.contrib.rnn.MultiRNNCell([encoDecoCell] * self.args.numLayers, state_is_tuple=True)
-
+        """
 
         #-------------------------------------------------------------------
+        if 0 < self.args.softmaxSamples < self.textData.getVocabularySize():
+            outputProjection = ProjectionOp(
+                (self.textData.getVocabularySize(), self.args.hiddenSize),
+                scope='softmax_projection',
+                dtype=self.dtype
+            )
+
+            def sampledSoftmax(labels, inputs):
+                labels = tf.reshape(labels, [-1, 1])  # Add one dimension (nb of true classes, here 1)
+
+                # We need to compute the sampled_softmax_loss using 32bit floats to
+                # avoid numerical instabilities.
+                localWt     = tf.cast(outputProjection.W_t,             tf.float32)
+                localB      = tf.cast(outputProjection.b,               tf.float32)
+                localInputs = tf.cast(inputs,                           tf.float32)
+
+                return tf.cast(
+                    tf.nn.sampled_softmax_loss(
+                        localWt,  # Should have shape [num_classes, dim]
+                        localB,
+                        labels,
+                        localInputs,
+                        self.args.softmaxSamples,  # The number of classes to randomly sample per batch
+                        self.textData.getVocabularySize()),  # The number of classes
+                    self.dtype)
+
         # Creation of the rnn cell
         def create_rnn_cell():
             encoDecoCell = tf.contrib.rnn.BasicLSTMCell(  # Or GRUCell, LSTMCell(args.hiddenSize)
@@ -212,33 +255,35 @@ class Model:
         # TODO: Attach a summary to visualize the output
 
         # For training only
-        # Finally, we define the loss function
-        self.lossFct = tf.contrib.legacy_seq2seq.sequence_loss(
-            decoderOutputs,
-            self.decoderTargets,
-            self.decoderWeights,
-            self.textData.getVocabularySize(),
-            softmax_loss_function= sampledSoftmax if outputProjection else None  # If None, use default SoftMax
-        )
-        tf.summary.scalar('loss', self.lossFct)  # Keep track of the cost
+        else:
+            # Finally, we define the loss function
+            self.lossFct = tf.contrib.legacy_seq2seq.sequence_loss(
+                decoderOutputs,
+                self.decoderTargets,
+                self.decoderWeights,
+                self.textData.getVocabularySize(),
+                softmax_loss_function= sampledSoftmax if outputProjection else None  # If None, use default SoftMax
+            )
+            tf.summary.scalar('loss', self.lossFct)  # Keep track of the cost
 
-        # Initialize the optimizer
-        opt = tf.train.AdamOptimizer(
-            learning_rate=self.args.learningRate,
-            beta1=0.9,
-            beta2=0.999,
-            epsilon=1e-08
-        )
-        self.optOp = opt.minimize(self.lossFct)
+            # Initialize the optimizer
+            opt = tf.train.AdamOptimizer(
+                learning_rate=self.args.learningRate,
+                beta1=0.9,
+                beta2=0.999,
+                epsilon=1e-08
+            )
+            self.optOp = opt.minimize(self.lossFct)
 
+    """
     def step(self, batch, is_test=False):
-        """ Forward/training step operation.
-        Does not perform run on itself but just return the operators to do so. Those have then to be run
-        Args:
-            batch (Batch): Input data on testing mode, input and target on output mode
-        Return:
-            (ops), dict: A tuple of the (training, loss) operators or (outputs,) in testing mode with the associated feed dictionary
-        """
+        # Forward/training step operation.
+        # Does not perform run on itself but just return the operators to do so. Those have then to be run
+        # Args:
+        #    batch (Batch): Input data on testing mode, input and target on output mode
+        # Return:
+        #    (ops), dict: A tuple of the (training, loss) operators or (outputs,) in testing mode with the associated feed dictionary
+        
 
         # Feed the dictionary
         feedDict = {}
@@ -263,3 +308,38 @@ class Model:
 
         # Return one pass operator
         return ops, feedDict
+    """
+
+    def step(self, batch):
+        """ Forward/training step operation.
+        Does not perform run on itself but just return the operators to do so. Those have then to be run
+        Args:
+            batch (Batch): Input data on testing mode, input and target on output mode
+        Return:
+            (ops), dict: A tuple of the (training, loss) operators or (outputs,) in testing mode with the associated feed dictionary
+        """
+
+        # Feed the dictionary
+        feedDict = {}
+        ops = None
+
+        if not self.args.test:  # Training
+            for i in range(self.args.maxLengthEnco):
+                feedDict[self.encoderInputs[i]]  = batch.encoderSeqs[i]
+            for i in range(self.args.maxLengthDeco):
+                feedDict[self.decoderInputs[i]]  = batch.decoderSeqs[i]
+                feedDict[self.decoderTargets[i]] = batch.targetSeqs[i]
+                feedDict[self.decoderWeights[i]] = batch.weights[i]
+
+            ops = (self.optOp, self.lossFct)
+        else:  # Testing (batchSize == 1)
+            for i in range(self.args.maxLengthEnco):
+                feedDict[self.encoderInputs[i]]  = batch.encoderSeqs[i]
+            feedDict[self.decoderInputs[0]]  = [self.textData.goToken]
+
+            ops = (self.outputs,)
+
+        # Return one pass operator
+        return ops, feedDict
+
+

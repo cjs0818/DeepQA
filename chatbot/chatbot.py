@@ -244,7 +244,8 @@ class Chatbot:
                 tic = datetime.datetime.now()
                 for nextBatch in tqdm(batches, desc="Training"):
                     # Training pass
-                    ops, feedDict = self.model.step(nextBatch, is_test=False)
+                    #ops, feedDict = self.model.step(nextBatch, is_test=False)
+                    ops, feedDict = self.model.step(nextBatch)
                     assert len(ops) == 2  # training, loss
                     _, loss, summary = sess.run(ops + (mergedSummaries,), feedDict)
                     losses.append(loss)
@@ -370,7 +371,8 @@ class Chatbot:
             questionSeq.extend(batch.encoderSeqs)
 
         # Run the model
-        ops, feedDict = self.model.step(batch, is_test=True)
+        #ops, feedDict = self.model.step(batch, is_test=True)
+        ops, feedDict = self.model.step(batch)
         # output.shape (202, 1, 36439)
         output = self.sess.run(ops[0], feedDict)  # TODO: Summarize the output too (histogram, ...)
         answer, prob = self.textData.deco2sentence(output)

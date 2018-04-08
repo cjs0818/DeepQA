@@ -515,6 +515,8 @@ class Chatbot:
         if self.args.modelTag:
             self.modelDir += '-' + self.args.modelTag
 
+        #print("self.modelDir: ", self.modelDir)
+
         # If there is a previous model, restore some parameters
         configName = os.path.join(self.modelDir, self.CONFIG_FILENAME)
         if not self.args.reset and not self.args.createDataset and os.path.exists(configName):

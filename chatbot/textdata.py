@@ -167,9 +167,9 @@ class TextData:
         batch.weights = weightsT
 
         # # Debug
-        # self.printBatch(batch)  # Input inverted, padding should be correct
-        # print(self.sequence2str(samples[0][0]))
-        # print(self.sequence2str(samples[0][1]))  # Check we did not modified the original sample
+        #self.printBatch(batch)  # Input inverted, padding should be correct
+        #print(self.sequence2str(samples[0][0]))
+        #print(self.sequence2str(samples[0][1]))  # Check we did not modified the original sample
 
         return batch
 
@@ -179,6 +179,19 @@ class TextData:
             list<Batch>: Get a list of the batches for the next epoch
         """
         self.shuffle()
+
+
+        # ----------    Test: start ---------
+        testidx = len(self.trainingSamples) - 1
+        print('length of trainingSample: {}'.format(len(self.trainingSamples)))
+        print('trainingSample[{}]: {}'.format(testidx, self.trainingSamples[testidx]))
+
+        print('Q: {}'.format(self.sequence2str(self.trainingSamples[testidx][0])))
+        print('A: {}'.format(self.sequence2str(self.trainingSamples[testidx][1])))
+        print()
+
+        # pause
+        # ----------    Test: end ---------
 
         batches = []
 
@@ -191,6 +204,16 @@ class TextData:
         for samples in genNextSamples():
             batch = self._createBatch(samples)
             batches.append(batch)
+
+
+        # ----------    Test: start ---------
+        testidx = len(batches) - 1
+        print("len(batches): ", len(batches))
+        print('batches[{}]: '.format(testidx))
+        self.printBatch(batches[testidx])  # Input inverted, padding should be correct
+        #pause
+        # ----------    Test: end ---------
+
         return batches
 
     def getSampleSize(self):
@@ -273,6 +296,33 @@ class TextData:
             self.goToken = self.word2id["<go>"]
             self.eosToken = self.word2id["<eos>"]
             self.unknownToken = self.word2id["<unknown>"]  # Restore special words
+
+
+            #----------    Test: start ---------
+            testidx = len(self.trainingSamples) - 1
+            print('length of trainingSample: {}'.format(len(self.trainingSamples)))
+            print('trainingSample[{}]: {}'.format(testidx, self.trainingSamples[testidx]))
+
+            tr_sample_q = self.trainingSamples[testidx][0]
+            tr_sample_a = self.trainingSamples[testidx][1]
+            Word_q = []
+            for word_id in tr_sample_q:
+                word = self.id2word[word_id]
+                Word_q.append(word)
+            print("Word_q: ", Word_q)
+            Word_a = []
+            for word_id in tr_sample_a:
+                word = self.id2word[word_id]
+                Word_a.append(word)
+            print("Word_a: ", Word_a)
+
+            print('Q: {}'.format(self.sequence2str(self.trainingSamples[testidx][0])))
+            print('A: {}'.format(self.sequence2str(self.trainingSamples[testidx][1])))
+            print()
+
+            #pause
+            #----------    Test: end ---------
+
 
     def createCorpus(self, conversations):
         """Extract all data from the given vocabulary

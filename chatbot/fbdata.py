@@ -45,7 +45,7 @@ class FBData:
                 line = line.decode('utf-8')
                 values = line.split("\t")
 
-                cnt = cnt + 1
+                cnt += 1
                 print("cnt: ", cnt)
                 print("line: ", line)
 
@@ -60,6 +60,8 @@ class FBData:
                 """
 
 
+                # When there are many answers to one question such as [Q1: A1,A2,A3...],
+                # then repeat the question to make pairs like [Q1:A1], [Q2: A2], ...
                 for i in range(3, len(values), 2):
                     q = {'like_count': values[0], 'text': values[1]}
                     a = {'like_count': values[i-1], 'text': values[i]}
@@ -69,6 +71,10 @@ class FBData:
                     convObj["lines"].append(q)
                     convObj["lines"].append(a)
                     conversations.append(convObj)
+
+                    #if cnt == 100:
+                    #    print(convObj["lines"])
+
         return conversations
 
     def getConversations(self):

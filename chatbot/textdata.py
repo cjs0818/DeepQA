@@ -290,6 +290,35 @@ class TextData:
         for conversation in tqdm(conversations, desc="Extract conversations"):
             self.extractConversation(conversation)
 
+
+
+        #----------    Test: start ---------
+        testidx = 169
+        print('length of trainingSample: {}'.format(len(self.trainingSamples)))
+        print('trainingSample[{}]: {}'.format(testidx, self.trainingSamples[testidx]))
+
+        tr_sample_q = self.trainingSamples[testidx][0]
+        tr_sample_a = self.trainingSamples[testidx][1]
+        Word_q = []
+        for word_id in tr_sample_q:
+            word = self.id2word[word_id]
+            Word_q.append(word)
+        print("Word_q: ", Word_q)
+        Word_a = []
+        for word_id in tr_sample_a:
+            word = self.id2word[word_id]
+            Word_a.append(word)
+        print("Word_a: ", Word_a)
+
+        print('Q: {}'.format(self.sequence2str(self.trainingSamples[testidx][0])))
+        print('A: {}'.format(self.sequence2str(self.trainingSamples[testidx][1])))
+        print()
+
+        #pause
+        #----------    Test: end ---------
+
+
+
         # The dataset will be saved in the same order it has been extracted
 
     def extractWords(self, conversations):

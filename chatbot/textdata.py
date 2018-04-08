@@ -293,7 +293,7 @@ class TextData:
 
 
         #----------    Test: start ---------
-        testidx = 169
+        testidx = len(self.trainingSamples) - 1
         print('length of trainingSample: {}'.format(len(self.trainingSamples)))
         print('trainingSample[{}]: {}'.format(testidx, self.trainingSamples[testidx]))
 

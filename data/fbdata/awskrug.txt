@@ -1,4 +1,0 @@
-1	http://www.allthingsdistributed.com/2012/02/Amazon-Simple-Workflow-Service.htmlAmazon AWS에서 신규 제품인 Simple Workflow Service가 나왔네요. 분산 상태 관리에 초점을 맞추고 있는 제품인거 같습니다.
-6	AWS 요금 체계는 사실 한번에 이해하기 좀 쉽지 않죠. ㅎㅎ 관련해서 황장호님이 낚이기(!)쉬운 부분을 잘 짚어 주셨네요. 	1	아주.. 도움이 되는 내용입니다. AWS 잠깐 싼.. 맛에.. 계획없이 지르면.. 신용카드처럼 비용결재가 돌아오는게 AWS입니당.^^ AWS = 신용카드..
-0	요즘 AWS의 비용 문제에 대해서 이런 저런 이야기들이 많이 들리죠? AWS 비용 비교에 대해서 AWS 시니어 에반젤리스트 Jeff Barr가 관련 글을 포스팅 했습니다.
-0	참고로 오징어 IRC(irc://irc.ozinger.org/aws) 에서 IRC 채널도 운영하고 있습니다. 별로 활성화는 않되어 있지만..ㅎㅎ

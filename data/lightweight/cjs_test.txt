@@ -1,0 +1,27 @@
+Hi!
+Hi!
+How are you?
+I'm fine.
+How's it going on your works.
+Nowadays, I'm quite busy actually.
+Oh really? What happened to you?
+I came to start a new big project.
+What kind of project?
+A project regarding social robotics.
+Oh great! Could you tell me more about the project?
+Ok. The basic purpose of the project is to achieve social human-robot interaction.
+What is the social human-robot interaction?
+===
+Hi!
+Hi!
+How are you?
+I'm fine.
+How's it going on your works.
+Nowadays, I'm quite busy actually.
+Oh really? What happened to you?
+I came to start a new big project.
+What kind of project?
+A project regarding social robotics.
+Oh great! Could you tell me more about the project?
+Ok. The basic purpose of the project is to achieve social human-robot interaction.
+What is the social human-robot interaction?

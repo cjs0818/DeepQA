@@ -34,7 +34,7 @@ class FBData:
         conversations = []
 
 
-        fileName = '/root/DeepQA_kor/data/fbdata/short.txt.gz'
+        fileName = '/root/DeepQA_kor/data/fbdata/short1000.txt.gz'
         #fileName = '/root/DeepQA_kor/data/fbdata/awskrug.txt'
         cnt = 0
 

@@ -260,11 +260,11 @@ class Chatbot:
                     # Checkpoint
                     if self.globStep % self.args.saveEvery == 0:
                         self._saveSession(sess)
-                        self.predictAndSave(
-                            "{}-test-{}.txt".format(self._getModelName(), self.globStep),
-                            test_lines,
-                            sess
-                        )
+                        #self.predictAndSave(
+                        #    "{}-test-{}.txt".format(self._getModelName(), self.globStep),
+                        #    test_lines,
+                        #    sess
+                        #)
 
                 toc = datetime.datetime.now()
                 avg_loss = np.mean(losses)
@@ -276,6 +276,9 @@ class Chatbot:
         self._saveSession(sess)  # Ultimate saving before complete exit
 
     def predictAndSave(self, target, lines, sess):
+
+        print("====  predictAndSave ===")
+
         with open(target, 'w', encoding='utf8') as f:
             ignored = 0
             for line in tqdm(lines, desc='Sentences'):
@@ -379,6 +382,9 @@ class Chatbot:
         ops, feedDict = self.model.step(batch)
         # output.shape (202, 1, 36439)
         output = self.sess.run(ops[0], feedDict)  # TODO: Summarize the output too (histogram, ...)
+
+        print("output: ", output)
+
         answer, prob = self.textData.deco2sentence(output)
 
         return answer, prob

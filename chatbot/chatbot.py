@@ -108,7 +108,8 @@ class Chatbot:
         datasetArgs.add_argument('--corpus', choices=['fbdata', 'cornell', 'opensubs'], default='fbdata', help='corpus on which extract the dataset. Only two corpus available right now (cornell and opensubs)')  # TODO: Replace by cst registered in textdata
         datasetArgs.add_argument('--datasetTag', type=str, default=None, help='add a tag to the dataset (file where to load the vocabulary and the precomputed samples, not the original corpus). Useful to manage multiple versions')  # The samples are computed from the corpus if it does not exist already. There are saved in \'data/samples/\'
         datasetArgs.add_argument('--ratioDataset', type=float, default=1.0, help='ratio of dataset used to avoid using the whole dataset')  # Not implemented, useless ?
-        datasetArgs.add_argument('--maxLength', type=int, default=200, help='maximum length of the sentence (for input and output), define number of maximum step of the RNN')
+        #datasetArgs.add_argument('--maxLength', type=int, default=200, help='maximum length of the sentence (for input and output), define number of maximum step of the RNN')
+        datasetArgs.add_argument('--maxLength', type=int, default=50, help='maximum length of the sentence (for input and output), define number of maximum step of the RNN')
         datasetArgs.add_argument('--vocabLimit', type=int, default=30000, help='maximum length of the words (using only top n words), -1 is unlimited words')
 
         # Network options (Warning: if modifying something here, also make the change on save/loadParams() )
@@ -369,7 +370,7 @@ class Chatbot:
         batch = self.textData.sentence2enco(question)
         if not batch:
             print("No batch")
-            return None
+            return None, None
         if questionSeq is not None:  # If the caller want to have the real input
             questionSeq.extend(batch.encoderSeqs)
 

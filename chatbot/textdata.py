@@ -557,7 +557,8 @@ class TextData:
         #tokens = nltk.word_tokenize(sentence)
         tokens = self.pos_tagger.morphs(sentence)
         if len(tokens) > self.args.maxLength:
-            return None
+            tokens = tokens[:self.args.maxLength]
+        #    return None
 
         # Second step: Convert the token in word ids
         wordIds = []

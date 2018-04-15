@@ -3,7 +3,7 @@ DOCKER=docker
 
 $DOCKER run -it --rm \
  --name deepqa \
- --volume /Users/jschoi/work/LSTM:/root:rw \
+ --volume /home/jschoi/work/LSTM:/root:rw \
  -p 8888:8888 \
  -p 6006:6006 \
  deepqa:latest \

@@ -182,13 +182,13 @@ class TextData:
 
 
         # ----------    Test: start ---------
-        testidx = len(self.trainingSamples) - 1
-        print('length of trainingSample: {}'.format(len(self.trainingSamples)))
-        print('trainingSample[{}]: {}'.format(testidx, self.trainingSamples[testidx]))
+        #testidx = len(self.trainingSamples) - 1
+        #print('length of trainingSample: {}'.format(len(self.trainingSamples)))
+        #print('trainingSample[{}]: {}'.format(testidx, self.trainingSamples[testidx]))
 
-        print('Q: {}'.format(self.sequence2str(self.trainingSamples[testidx][0])))
-        print('A: {}'.format(self.sequence2str(self.trainingSamples[testidx][1])))
-        print()
+        #print('Q: {}'.format(self.sequence2str(self.trainingSamples[testidx][0])))
+        #print('A: {}'.format(self.sequence2str(self.trainingSamples[testidx][1])))
+        #print()
 
         # pause
         # ----------    Test: end ---------
@@ -207,10 +207,10 @@ class TextData:
 
 
         # ----------    Test: start ---------
-        testidx = len(batches) - 1
-        print("len(batches): ", len(batches))
-        print('batches[{}]: '.format(testidx))
-        self.printBatch(batches[testidx])  # Input inverted, padding should be correct
+        #testidx = len(batches) - 1
+        #print("len(batches): ", len(batches))
+        #print('batches[{}]: '.format(testidx))
+        #self.printBatch(batches[testidx])  # Input inverted, padding should be correct
         #pause
         # ----------    Test: end ---------
 
@@ -300,11 +300,13 @@ class TextData:
 
             #----------    Test: start ---------
             testidx = len(self.trainingSamples) - 1
-            print('length of trainingSample: {}'.format(len(self.trainingSamples)))
-            print('trainingSample[{}]: {}'.format(testidx, self.trainingSamples[testidx]))
+            print('Length of trainingSample: {}'.format(len(self.trainingSamples)))
+            print(' trainingSample[{}]: {}'.format(testidx, self.trainingSamples[testidx]))
 
             tr_sample_q = self.trainingSamples[testidx][0]
             tr_sample_a = self.trainingSamples[testidx][1]
+
+
             Word_q = []
             for word_id in tr_sample_q:
                 word = self.id2word[word_id]
@@ -349,6 +351,9 @@ class TextData:
 
         tr_sample_q = self.trainingSamples[testidx][0]
         tr_sample_a = self.trainingSamples[testidx][1]
+        print("length of tr_sample_q: {}", len(tr_sample_q))
+        print("length of tr_sample_a: {}", len(tr_sample_a))
+
         Word_q = []
         for word_id in tr_sample_q:
             word = self.id2word[word_id]
@@ -417,6 +422,9 @@ class TextData:
 
             inputWords  = self.extractText(inputLine["text"])
             targetWords = self.extractText(targetLine["text"], True)
+
+            #print("length of inputWords: ", len(inputWords))
+            #print("length of targetWords: ", len(targetWords))
 
             if inputWords and targetWords:  # Filter wrong samples (if one of the list is empty)
                 self.trainingSamples.append([inputWords, targetWords])
@@ -556,9 +564,15 @@ class TextData:
         # First step: Divide the sentence in token
         #tokens = nltk.word_tokenize(sentence)
         tokens = self.pos_tagger.morphs(sentence)
+
+        #print("len(tokens): ", len(tokens))
+
         if len(tokens) > self.args.maxLength:
+        #    print('len(tokens): [{}] > args.maxLength: [{}] !!!'.format(len(tokens), self.args.maxLength))
         #    tokens = tokens[:self.args.maxLength]
             return None
+
+
 
         # Second step: Convert the token in word ids
         wordIds = []

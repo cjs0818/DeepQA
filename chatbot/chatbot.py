@@ -96,7 +96,7 @@ class Chatbot:
         globalArgs.add_argument('--playDataset', type=int, nargs='?', const=10, default=None,  help='if set, the program  will randomly play some samples(can be use conjointly with createDataset if this is the only action you want to perform)')
         globalArgs.add_argument('--reset', action='store_true', help='use this if you want to ignore the previous model present on the model directory (Warning: the model will be destroyed with all the folder content)')
         globalArgs.add_argument('--verbose', action='store_true', help='When testing, will plot the outputs at the same time they are computed')
-        globalArgs.add_argument('--keep', type=int, default=10, help='Maximum number of recent checkpoints to keep. Defaults to 5.')
+        globalArgs.add_argument('--keep', type=int, default=30, help='Maximum number of recent checkpoints to keep. Defaults to 5.')
         globalArgs.add_argument('--modelTag', type=str, default=None, help='tag to differentiate which model to store/load')
         globalArgs.add_argument('--rootDir', type=str, default=None, help='folder where to look for the models and data')
         globalArgs.add_argument('--watsonMode', action='store_true', help='Inverse the questions and answer when training (the network try to guess the question)')
@@ -160,10 +160,13 @@ class Chatbot:
             print('Dataset created! Thanks for using this program')
             return  # No need to go further
 
+
+        print("== Dataset created~~~")
         # Prepare the model
         with tf.device(self.getDevice()):
             self.model = Model(self.args, self.textData)
 
+        print("== Model created~~~")
         # Saver/summaries
         self.writer = tf.summary.FileWriter(self._getSummaryName())
         self.saver = tf.train.Saver(max_to_keep=self.args.keep)
@@ -203,6 +206,7 @@ class Chatbot:
             else:
                 raise RuntimeError('Unknown test mode: {}'.format(self.args.test))  # Should never happen
         else:
+            print("== mainTrain() started~~~")
             self.mainTrain(self.sess)
 
         if self.args.test != Chatbot.TestMode.DAEMON:
@@ -234,8 +238,15 @@ class Chatbot:
                 print("----- Epoch {}/{} ; (lr={}) -----".format(e+1, self.args.numEpochs, self.args.learningRate))
 
                 batches = self.textData.getBatches()
-                print("----- Epoch {}/{} ; (lr={}) -----".format(e+1, self.args.numEpochs, self.args.learningRate))
 
+                # ----------    Test: start ---------
+                #testidx = len(batches) - 1
+                #for testidx in range(len(batches)):
+                #    print('batches[{}/{}]: '.format(testidx, len(batches)))
+                #    self.textData.printBatch(batches[testidx])  # Input inverted, padding should be correct
+                ## pause
+                #print("----- Epoch {}/{} ; (lr={}) -----".format(e+1, self.args.numEpochs, self.args.learningRate))
+                # ----------    Test: end ---------
 
 
                 # TODO: Also update learning parameters eventually
@@ -245,14 +256,34 @@ class Chatbot:
 
                 losses = []
 
+
+                cnt = 0
+
                 tic = datetime.datetime.now()
                 for nextBatch in tqdm(batches, desc="Training"):
                     # Training pass
                     #ops, feedDict = self.model.step(nextBatch, is_test=False)
+
+
+                    # ----------    Test: start ---------
+                    cnt += 1
+                    #print('cnt: {}/{}'.format(cnt, len(batches)))
+                    #self.textData.printBatch(nextBatch)  # Input inverted, padding should be correct
+                    # ----------    Test: start ---------
+
+
+
                     ops, feedDict = self.model.step(nextBatch)
                     assert len(ops) == 2  # training, loss
+
+                    #print("self.model.step(nextBatch) finished!")
+
+                    # ??????????????????????????????????????????
                     _, loss, summary = sess.run(ops + (mergedSummaries,), feedDict)
                     losses.append(loss)
+                    # ??????????????????????????????????????????
+
+                    #print("sess.run(ops + (mergedSummaries,), feedDict) finished!")
 
                     self.writer.add_summary(summary, self.globStep)
                     self.globStep += 1
@@ -284,7 +315,11 @@ class Chatbot:
             for line in tqdm(lines, desc='Sentences'):
                 question = line[:-1]  # Remove the endl character
 
+                #print("len(question): ", len(question))
+
                 answer, prob = self.singlePredict(question)
+
+
                 if not answer:
                     ignored += 1
                     continue  # Back to the beginning, try again
@@ -371,6 +406,8 @@ class Chatbot:
         """
         # Create the input batch
         batch = self.textData.sentence2enco(question)
+
+
         if not batch:
             print("No batch")
             return None, None

@@ -165,9 +165,14 @@ class Model:
         """
 
         #-------------------------------------------------------------------
+
+        print("self.textData.getVocabularySize(): ", self.textData.getVocabularySize()) # 1411
+        print("self.args.hiddenSize(): ", self.args.hiddenSize)
+        print("self.args.softmaxSamples: ", self.args.softmaxSamples)   # 0
+
         if 0 < self.args.softmaxSamples < self.textData.getVocabularySize():
             outputProjection = ProjectionOp(
-                (self.textData.getVocabularySize(), self.args.hiddenSize),
+                (self.textData.getVocabularySize(), self.args.hiddenSize),  # (1141, 32)
                 scope='softmax_projection',
                 dtype=self.dtype
             )
@@ -213,12 +218,12 @@ class Model:
         # Network input (placeholders)
 
         with tf.name_scope('placeholder_encoder'):
-            self.encoderInputs  = [tf.placeholder(tf.int32,   [None, ]) for _ in range(self.args.maxLengthEnco)]  # Batch size * sequence length * input dim
+            self.encoderInputs = [tf.placeholder(tf.int32,   [None, ]) for _ in range(self.args.maxLengthEnco)]  # Batch size * sequence length * input dim
 
             print("-------------------------------------------------")
             print("self.args.maxLengthEnco: ", self.args.maxLengthEnco)   # 200
-            print("self.args.maxLengthEnco: ", self.args.maxLengthDeco)   # 202
-            print("self.textData.getVocabularySize(): ", self.textData.getVocabularySize())  # 27956
+            print("self.args.maxLengthDeco: ", self.args.maxLengthDeco)   # 202
+            print("self.textData.getVocabularySize(): ", self.textData.getVocabularySize())  # 1411 for short50.txt.gz, 27956 for all.txt.gz
             print("self.args.embeddingSize: ", self.args.embeddingSize)   # 32
 
             #print("self.encoderInputs: ", self.encoderInputs[0])
@@ -323,8 +328,25 @@ class Model:
         feedDict = {}
         ops = None
 
+        # -----   Test  -------
+        #self.textData.printBatch(batch)  # Input inverted, padding should be correct
+        # -----   Test  -------
+
         if not self.args.test:  # Training
+
+            #for i in range(len(batch.encoderSeqs[0])):  # Batch size
+            #    print('--- Encoder: {}'.format(self.textData.batchSeq2str(batch.encoderSeqs, seqId=i)))
+            #    print('--- Decoder: {}'.format(self.textData.batchSeq2str(batch.decoderSeqs, seqId=i)))
+            #    print('--- Targets: {}'.format(self.textData.batchSeq2str(batch.targetSeqs, seqId=i)))
+
+
             for i in range(self.args.maxLengthEnco):
+            #    if i <= 10:
+            #        print("i: ", i)
+            #        print("batch.encoderSeqs[i]]: ", self.textData.sequence2str(batch.encoderSeqs[i]))
+            #        print("batch.decoderSeqs[i]]: ", self.textData.sequence2str(batch.decoderSeqs[i]))
+            #        print("batch.targetSeqs[i]]: ", self.textData.sequence2str(batch.targetSeqs[i]))
+
                 feedDict[self.encoderInputs[i]]  = batch.encoderSeqs[i]
             for i in range(self.args.maxLengthDeco):
                 feedDict[self.decoderInputs[i]]  = batch.decoderSeqs[i]

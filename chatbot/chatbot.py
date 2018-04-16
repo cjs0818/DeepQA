@@ -420,7 +420,7 @@ class Chatbot:
         # output.shape (202, 1, 36439)
         output = self.sess.run(ops[0], feedDict)  # TODO: Summarize the output too (histogram, ...)
 
-        print("output: ", output)
+        #print("output: ", output)
 
         answer, prob = self.textData.deco2sentence(output)
 

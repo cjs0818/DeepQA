@@ -3,6 +3,9 @@ DOCKER=docker
 
 $DOCKER run -it --rm \
  --name deepqa \
+ --env DISPLAY=$DISPLAY \
+ --env="QT_X11_NO_MITSHM=1" \
+ --volume /tmp/.X11-unix:/tmp/.X11-unix:ro \
  --volume /home/jschoi/work/LSTM:/root:rw \
  -p 8888:8888 \
  -p 6006:6006 \

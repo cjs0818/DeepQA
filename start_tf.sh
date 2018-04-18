@@ -2,14 +2,14 @@ DOCKER=docker
 #DOCKER=nvidia-docker
 
 #---------------------------
-#OS=OSX
-OS=Linux
+OS=OSX
+#OS=Linux
 
 GPU=0
 #GPU=1
 
-#EN0=en0
-EN0=enp0s5
+EN0=en0
+#EN0=enp0s5
 #EN0=enp0s31f6
 
 DISPLAY_IP=$(ifconfig $EN0 | grep inet | awk '$1=="inet" {print $2}')
@@ -19,6 +19,7 @@ then
   DOCKER=docker
   XDISP=DISPLAY=$DISPLAY_IP:0  # for OSX
   WORKDIR=/Users/jschoi/work/LSTM
+  ./socat_start.sh &
 else
   if [ $GPU = 1 ]
   then
@@ -28,9 +29,9 @@ else
   fi
   XDISP="DISPLAY"             # for Linux
   WORKDIR=/home/jschoi/work/LSTM
+  xhost +
 fi
 
-xhost +
 #---------------------------
 
 $DOCKER run -it --rm \

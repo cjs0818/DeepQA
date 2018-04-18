@@ -31,6 +31,7 @@ import codecs
 from chatbot.cornelldata import CornellData
 from chatbot.opensubsdata import OpensubsData
 from chatbot.fbdata import FBData
+from chatbot.lightweightdata import LightweightData
 
 
 class Batch:
@@ -255,6 +256,15 @@ class TextData:
                 print("-----05-01--------")
                 fbData = FBData(self.corpusDir)
                 self.createCorpus(fbData.getConversations())
+            #-------------------------------------------------
+            #   Added by cjs
+            elif self.args.corpus == 'lightweight':
+                if not self.args.datasetTag:
+                    raise ValueError('Use the --datasetTag to define the lightweight file to use.')
+                optional = os.sep + self.args.datasetTag  # HACK: Forward the filename
+                lightweightData = LightweightData(self.corpusDir + optional)
+                self.createCorpus(lightweightData.getConversations())
+            #-------------------------------------------------
 
             # Saving
             print('Saving dataset...')

@@ -11,6 +11,8 @@ apt-get -qq -y update && apt-get -y install unzip default-jdk
 #apt-get -qq -y update && apt-get -y install unzip
 #python3 python3-pip
 
+RUN python3 -m pip install pip --upgrade
+
 RUN  \
   pip3 install -U nltk \
   tqdm \

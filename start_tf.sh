@@ -2,8 +2,8 @@ DOCKER=docker
 #DOCKER=nvidia-docker
 
 #---------------------------
-#OS=OSX
-OS=Linux
+OS=OSX
+#OS=Linux
 
 GPU=0
 #GPU=1
@@ -30,7 +30,7 @@ else
   WORKDIR=/home/jschoi/work/LSTM
 fi
 
-xhost+
+#xhost +
 #---------------------------
 
 $DOCKER run -it --rm \

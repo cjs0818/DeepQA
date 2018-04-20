@@ -32,6 +32,7 @@ from chatbot.cornelldata import CornellData
 from chatbot.opensubsdata import OpensubsData
 from chatbot.fbdata import FBData
 from chatbot.lightweightdata import LightweightData
+from chatbot.listendata import LISTENData
 
 
 class Batch:
@@ -264,6 +265,9 @@ class TextData:
                 optional = os.sep + self.args.datasetTag  # HACK: Forward the filename
                 lightweightData = LightweightData(self.corpusDir + optional)
                 self.createCorpus(lightweightData.getConversations())
+            elif self.args.corpus == 'listendata':
+                listenData = LISTENData(self.corpusDir)
+                self.createCorpus(listenData.getConversations())
             #-------------------------------------------------
 
             # Saving

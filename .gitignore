@@ -1,3 +1,6 @@
+# Output by execution 
+words.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

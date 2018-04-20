@@ -44,6 +44,8 @@ RUN pip3 install konlpy Jpype1
 RUN python3 -m nltk.downloader punkt
 #----------------------------------------
 
+COPY ./.bashrc_gpu /root/.bashrc
+
 
 #COPY ./ /root/DeepQA
 

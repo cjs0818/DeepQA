@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+
+  master:
+#    build: .
+    image: deepqa:latest-gpu
+    container_name: deepqa_gpu
+    ports:
+      - "8888:8888"
+      - "6006:6006"
+    command:
+      - bash

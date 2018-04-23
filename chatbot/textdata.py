@@ -404,6 +404,10 @@ class TextData:
 
                 tokens = self.pos_tagger.morphs(line["text"])
                 for token in tokens:
+                    #---------------------
+                    # TODO: Filter out POS words
+                    #---------------------
+
                     idx = word_count_map.get(token, None)
 
                     if idx:

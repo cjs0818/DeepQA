@@ -13,6 +13,7 @@ apt-get -qq -y update && apt-get -y install unzip default-jdk
 
 RUN python3 -m pip install pip --upgrade
 
+## DeepQA baseline
 RUN  \
   pip3 install -U nltk \
   tqdm \
@@ -33,14 +34,16 @@ RUN export PATH=$PATH:/opt/ide/bin
 #RUN \
 #  pip3 install -U $TF_BINARY_URL
 
-RUN \
-  pip3 install asgiref==2.2.0
-  #&& pip3 install django==1.10 \
-  #&& pip3 install channels==1.1.8
+RUN pip3 install asgiref==2.2.0
 
 #----------------------------------------
+#  KoNLPy
 RUN pip3 install konlpy Jpype1
 RUN python3 -m nltk.downloader punkt
+RUN apt-get -qq -y update && apt-get -y install python3-tk
+
+#  LISTEN
+RUN pip3 install openpyxl termcolor
 #----------------------------------------
 
 

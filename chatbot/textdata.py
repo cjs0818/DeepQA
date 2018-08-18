@@ -76,6 +76,7 @@ class TextData:
         print("------")
         self.loadCorpus(self.samplesDir)
         print("======")
+        print("self.args.corpus: ", self.args.corpus)
         print("self.samplesName: ", self.samplesName)
 
         # Plot some stats:
@@ -243,6 +244,7 @@ class TextData:
         datasetExist = False
         if os.path.exists(os.path.join(dirName, self.samplesName)):
             datasetExist = True
+
 
         if not datasetExist:  # First time we load the database: creating all files
             print('Training samples not found. Creating dataset...')

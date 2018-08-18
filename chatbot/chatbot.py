@@ -106,7 +106,7 @@ class Chatbot:
         # Dataset options
         datasetArgs = parser.add_argument_group('Dataset options')
         #datasetArgs.add_argument('--corpus', choices=['fbdata', 'cornell', 'opensubs', 'lightweight', 'listendata'], default='fbdata', help='corpus on which extract the dataset. Only two corpus available right now (cornell and opensubs)')  # TODO: Replace by cst registered in textdata
-        datasetArgs.add_argument('--corpus', choices=['fbdata', 'cornell', 'opensubs', 'lightweight', 'listendata'], default='listendata', help='corpus on which extract the dataset. Only two corpus available right now (cornell and opensubs)')  # TODO: Replace by cst registered in textdata
+        datasetArgs.add_argument('--corpus', choices=['fbdata', 'cornell', 'opensubs', 'lightweight', 'listendata'], default='lightweight', help='corpus on which extract the dataset. Only two corpus available right now (cornell and opensubs)')  # TODO: Replace by cst registered in textdata
         datasetArgs.add_argument('--datasetTag', type=str, default='cjs_test', help='add a tag to the dataset (file where to load the vocabulary and the precomputed samples, not the original corpus). Useful to manage multiple versions')  # The samples are computed from the corpus if it does not exist already. There are saved in \'data/samples/\'
         datasetArgs.add_argument('--ratioDataset', type=float, default=1.0, help='ratio of dataset used to avoid using the whole dataset')  # Not implemented, useless ?
         #datasetArgs.add_argument('--maxLength', type=int, default=200, help='maximum length of the sentence (for input and output), define number of maximum step of the RNN')
